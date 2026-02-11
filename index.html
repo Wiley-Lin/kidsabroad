@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Converter</title>
+
+<style>
+:root{
+  --bg:#F2EFEA;
+  --card:rgba(255,255,255,.9);
+  --ink:#2F2F2F;
+  --muted:#6D6D6D;
+  --line:rgba(47,47,47,.10);
+  --shadow:0 8px 20px rgba(47,47,47,.08);
+  --radius:18px;
+
+  /* Morandi accents */
+  --m1:#C9B7A8;
+  --m2:#A9B7AE;
+  --m3:#B7A8B5;
+  --m4:#A8B2C5;
+  --m5:#D7C9B6;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Noto Sans TC","Microsoft JhengHei",sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+
+.wrap{
+  max-width:980px;
+  margin:auto;
+  padding:20px 16px 40px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:14px;
+}
+
+button{
+  border:1px solid var(--line);
+  background:white;
+  padding:8px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  box-shadow: 0 6px 16px rgba(47,47,47,.06);
+}
+button:active{ transform: translateY(1px); }
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:14px;
+}
+
+.card{
+  grid-column:span 6;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  position:relative;
+}
+
+.card.wide{ grid-column:span 12; }
+
+.card::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:8px;
+  border-radius: 18px 0 0 18px;
+}
+
+.c1::before{background:var(--m1);}
+.c2::before{background:var(--m2);}
+.c3::before{background:var(--m3);}
+.c4::before{background:var(--m4);}
+.c5::before{background:var(--m5);}
+
+.header{
+  font-weight:800;
+  margin-bottom:12px;
+  padding-left:6px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:baseline;
+}
+
+.header small{
+  font-weight:600;
+  color:var(--muted);
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:10px;
+  align-items:end;
+  padding-left:6px;
+}
+
+.swap{
+  width:40px;height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:white;
+  color: var(--muted);
+}
+
+label{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.field{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:white;
+}
+
+input{
+  border:0;
+  outline:0;
+  width:100%;
+  font-size:15px;
+  background:transparent;
+  color: var(--ink);
+}
+
+.unit{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.ftin{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.currency3{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  padding-left:6px;
+}
+
+@media(max-width:860px){
+  .card{grid-column:span 12;}
+  .row{grid-template-columns:1fr;}
+  .swap{width:100%;}
+  .currency3{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <button id="clearBtn">🧼 Clear</button>
+  </div>
+
+  <div class="grid">
+
+    <!-- cm ↔ ft/in -->
+    <div class="card c1">
+      <div class="header"><span>📏 cm ↔ ft / in</span><small></small></div>
+      <div class="row">
+        <div>
+          <label>cm</label>
+          <div class="field">
+            <input id="cm" type="number" step="any" inputmode="decimal">
+            <span class="unit">cm</span>
+          </div>
+        </div>
+
+        <div class="swap">↔</div>
+
+        <div>
+          <label>ft / in</label>
+          <div class="ftin">
+            <div class="field">
+              <input id="ft" type="number" step="1" inputmode="numeric">
+              <span class="unit">ft</span>
+            </div>
+            <div class="field">
+              <input id="inch" type="number" step="any" inputmode="decimal">
+              <span class="unit">in</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- kg ↔ lb -->
+    <div class="card c2">
+      <div class="header"><span>⚖️ kg ↔ lb</span><small></small></div>
+      <div class="row">
+        <div>
+          <label>kg</label>
+          <div class="field">
+            <input id="kg" type="number" step="any" inputmode="decimal">
+            <span class="unit">kg</span>
+          </div>
+        </div>
+
+        <div class="swap">↔</div>
+
+        <div>
+          <label>lb</label>
+          <div class="field">
+            <input id="lb" type="number" step="any" inputmode="decimal">
+            <span class="unit">lb</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- °C ↔ °F -->
+    <div class="card c3">
+      <div class="header"><span>🌡️ °C ↔ °F</span><small></small></div>
+      <div class="row">
+        <div>
+          <label>°C</label>
+          <div class="field">
+            <input id="c" type="number" step="any" inputmode="decimal">
+            <span class="unit">°C</span>
+          </div>
+        </div>
+
+        <div class="swap">↔</div>
+
+        <div>
+          <label>°F</label>
+          <div class="field">
+            <input id="f" type="number" step="any" inputmode="decimal">
+            <span class="unit">°F</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- km ↔ mi -->
+    <div class="card c4">
+      <div class="header"><span>🛣️ km ↔ mi</span><small></small></div>
+      <div class="row">
+        <div>
+          <label>km</label>
+          <div class="field">
+            <input id="km" type="number" step="any" inputmode="decimal">
+            <span class="unit">km</span>
+          </div>
+        </div>
+
+        <div class="swap">↔</div>
+
+        <div>
+          <label>mi</label>
+          <div class="field">
+            <input id="mi" type="number" step="any" inputmode="decimal">
+            <span class="unit">mi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USD / TWD / JPY -->
+    <div class="card c5 wide">
+      <div class="header">
+        <span>💱 USD ↔ TWD ↔ JPY</span>
+        <small id="fxStatus">🌍 loading...</small>
+      </div>
+
+      <div class="currency3">
+        <div>
+          <label>🇺🇸 USD</label>
+          <div class="field">
+            <input id="usd" type="number" step="any" inputmode="decimal">
+            <span class="unit">USD</span>
+          </div>
+        </div>
+
+        <div>
+          <label>🇹🇼 TWD</label>
+          <div class="field">
+            <input id="twd" type="number" step="any" inputmode="decimal">
+            <span class="unit">TWD</span>
+          </div>
+        </div>
+
+        <div>
+          <label>🇯🇵 JPY</label>
+          <div class="field">
+            <input id="jpy" type="number" step="any" inputmode="decimal">
+            <span class="unit">JPY</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const parse = el => el.value === "" ? NaN : Number(el.value);
+const set = (el, v, d=2) => {
+  if (!Number.isFinite(v)) { el.value = ""; return; }
+  const p = 10 ** d;
+  el.value = String(Math.round(v * p) / p);
+};
+
+const g = {};
+function guard(key, fn){
+  if (g[key]) return;
+  g[key] = true;
+  try { fn(); } finally { g[key] = false; }
+}
+
+/* ---------- cm ↔ ft/in ---------- */
+$("cm").oninput = () => guard("cm", () => {
+  const cm = parse($("cm"));
+  if (!Number.isFinite(cm)) { $("ft").value=""; $("inch").value=""; return; }
+  const total = cm / 2.54;
+  $("ft").value = Math.floor(total / 12);
+  set($("inch"), total % 12, 1);
+});
+$("ft").oninput = $("inch").oninput = () => guard("ft", () => {
+  const hasFt = $("ft").value !== "";
+  const hasIn = $("inch").value !== "";
+  if (!hasFt && !hasIn) { $("cm").value=""; return; }
+  const ft = hasFt ? Number($("ft").value) : 0;
+  const inch = hasIn ? Number($("inch").value) : 0;
+  set($("cm"), (ft * 12 + inch) * 2.54, 2);
+});
+
+/* ---------- kg ↔ lb ---------- */
+const K = 2.2046226218;
+$("kg").oninput = () => guard("kg", () => set($("lb"), parse($("kg")) * K, 2));
+$("lb").oninput = () => guard("lb", () => set($("kg"), parse($("lb")) / K, 2));
+
+/* ---------- °C ↔ °F ---------- */
+$("c").oninput = () => guard("c", () => set($("f"), parse($("c")) * 9/5 + 32, 1));
+$("f").oninput = () => guard("f", () => set($("c"), (parse($("f")) - 32) * 5/9, 1));
+
+/* ---------- km ↔ mi ---------- */
+const M = 0.6213711922;
+$("km").oninput = () => guard("km", () => set($("mi"), parse($("km")) * M, 2));
+$("mi").oninput = () => guard("mi", () => set($("km"), parse($("mi")) / M, 2));
+
+/* ---------- FX: USD / TWD / JPY (hourly refresh + local timezone display) ---------- */
+const FX_URL = "https://open.er-api.com/v6/latest/USD";
+const FX_CACHE_KEY = "fx_cache_v3";
+const FX_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+let fxRates = null; // { TWD, JPY }
+let lastCurrencyEdited = null;
+
+function fmtTime(ts){
+  try{
+    const d = new Date(ts);
+    const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local";
+
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+
+    // local offset at that moment (auto DST)
+    const offsetMin = -d.getTimezoneOffset();
+    const sign = offsetMin >= 0 ? "+" : "-";
+    const abs = Math.abs(offsetMin);
+    const offH = String(Math.floor(abs/60)).padStart(2,"0");
+    const offM = String(abs%60).padStart(2,"0");
+    const gmt = `GMT${sign}${offH}${offM==="00" ? "" : ":"+offM}`;
+
+    return `${y}-${m}-${day} ${hh}:${mm} ${tzName} (${gmt})`;
+  }catch{
+    return "";
+  }
+}
+
+function setFxStatus(text){
+  $("fxStatus").textContent = text || "";
+}
+
+function loadCache(){
+  try{
+    const raw = localStorage.getItem(FX_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch{
+    return null;
+  }
+}
+
+function saveCache(obj){
+  try{ localStorage.setItem(FX_CACHE_KEY, JSON.stringify(obj)); }catch{}
+}
+
+function recalcCurrencyFromActive(){
+  if (!fxRates) return;
+
+  const usd = parse($("usd"));
+  const twd = parse($("twd"));
+  const jpy = parse($("jpy"));
+
+  guard("fx", () => {
+    if (lastCurrencyEdited === "usd"){
+      set($("twd"), Number.isFinite(usd) ? usd * fxRates.TWD : NaN, 2);
+      set($("jpy"), Number.isFinite(usd) ? usd * fxRates.JPY : NaN, 2);
+    }else if (lastCurrencyEdited === "twd"){
+      const base = Number.isFinite(twd) ? (twd / fxRates.TWD) : NaN;
+      set($("usd"), base, 2);
+      set($("jpy"), Number.isFinite(base) ? base * fxRates.JPY : NaN, 2);
+    }else if (lastCurrencyEdited === "jpy"){
+      const base = Number.isFinite(jpy) ? (jpy / fxRates.JPY) : NaN;
+      set($("usd"), base, 2);
+      set($("twd"), Number.isFinite(base) ? base * fxRates.TWD : NaN, 2);
+    }
+  });
+}
+
+async function fetchRatesIfNeeded(force=false){
+  const cached = loadCache();
+  const now = Date.now();
+
+  if (!force && cached && cached.ts && (now - cached.ts) < FX_TTL_MS && cached.rates?.TWD && cached.rates?.JPY){
+    fxRates = cached.rates;
+    setFxStatus(`✨ updated ${fmtTime(cached.ts)}`);
+    return;
+  }
+
+  try{
+    setFxStatus("🌍 updating...");
+    const res = await fetch(FX_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("fetch failed");
+    const data = await res.json();
+
+    const TWD = data?.rates?.TWD;
+    const JPY = data?.rates?.JPY;
+    if (!Number.isFinite(TWD) || !Number.isFinite(JPY)) throw new Error("missing rates");
+
+    fxRates = { TWD, JPY };
+    saveCache({ ts: now, rates: fxRates });
+
+    setFxStatus(`✨ updated ${fmtTime(now)}`);
+    recalcCurrencyFromActive();
+  }catch{
+    if (cached && cached.rates?.TWD && cached.rates?.JPY){
+      fxRates = cached.rates;
+      setFxStatus(`⚠ cached ${fmtTime(cached.ts)}`);
+    }else{
+      fxRates = null;
+      setFxStatus("❌ offline");
+    }
+  }
+}
+
+$("usd").oninput = () => { if (g.fx) return; lastCurrencyEdited="usd"; if (fxRates) recalcCurrencyFromActive(); };
+$("twd").oninput = () => { if (g.fx) return; lastCurrencyEdited="twd"; if (fxRates) recalcCurrencyFromActive(); };
+$("jpy").oninput = () => { if (g.fx) return; lastCurrencyEdited="jpy"; if (fxRates) recalcCurrencyFromActive(); };
+
+// initial fetch + hourly refresh
+fetchRatesIfNeeded(false);
+setInterval(() => fetchRatesIfNeeded(false), FX_TTL_MS);
+
+/* ---------- clear ---------- */
+$("clearBtn").onclick = () => {
+  ["cm","ft","inch","kg","lb","c","f","km","mi","usd","twd","jpy"].forEach(id => $(id).value="");
+  lastCurrencyEdited = null;
+};
+</script>
+
+</body>
+</html>
