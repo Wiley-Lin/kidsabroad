@@ -153,9 +153,9 @@ input{
   gap:10px;
 }
 
-.currency3{
+.currency4{
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr 1fr;
   gap:10px;
   padding-left:6px;
 }
@@ -165,7 +165,7 @@ input{
 @media(max-width:860px){
   .card{grid-column:span 12;}
   .row{grid-template-columns:1fr;}
-  .currency3{grid-template-columns:1fr;}
+  .currency4{grid-template-columns:1fr;}
 }
 
 @media(max-width:520px){
@@ -299,7 +299,7 @@ input{
 <small id="fxStatus">🌍 loading...</small>
 </div>
 
-<div class="currency3">
+<div class="currency4">
 <div>
 <label>🇺🇸 USD</label>
 <div class="field">
@@ -321,6 +321,15 @@ input{
 <div class="field">
 <input id="jpy" type="number" step="any">
 <span class="unit">JPY</span>
+</div>
+</div>
+
+<div>
+<label>💶 EUR</label>
+<div class="field">
+  <input id="eur" type="number" step="any" inputmode="decimal" placeholder="例如 90">
+  <span class="unit">EUR</span>
+</div>
 </div>
 </div>
 </div>
@@ -401,7 +410,11 @@ try{
 status("🌍 updating...");
 let r=await fetch(FX_URL);
 let d=await r.json();
-fxRates={TWD:d.rates.TWD,JPY:d.rates.JPY};
+fxRates = { 
+  TWD:d.rates.TWD, 
+  JPY:d.rates.JPY,
+  EUR:d.rates.EUR
+};
 localStorage.setItem(FX_CACHE_KEY,JSON.stringify({ts:now,rates:fxRates}));
 status("✨ updated "+fmtTime(now));
 }catch{
@@ -416,30 +429,48 @@ status("❌ offline");
 
 function recalc(){
 if(!fxRates)return;
+
 const usd=parse($("usd"));
 const twd=parse($("twd"));
 const jpy=parse($("jpy"));
+const eur=parse($("eur"));
+
 guard("fx",()=>{
+
 if(lastEdit==="usd" && isFinite(usd)){
 set($("twd"),usd*fxRates.TWD,2);
 set($("jpy"),usd*fxRates.JPY,2);
+set($("eur"),usd*fxRates.EUR,2);
 }
+
 if(lastEdit==="twd" && isFinite(twd)){
 let base=twd/fxRates.TWD;
 set($("usd"),base,2);
 set($("jpy"),base*fxRates.JPY,2);
+set($("eur"),base*fxRates.EUR,2);
 }
+
 if(lastEdit==="jpy" && isFinite(jpy)){
 let base=jpy/fxRates.JPY;
 set($("usd"),base,2);
 set($("twd"),base*fxRates.TWD,2);
+set($("eur"),base*fxRates.EUR,2);
 }
+
+if(lastEdit==="eur" && isFinite(eur)){
+let base=eur/fxRates.EUR;
+set($("usd"),base,2);
+set($("twd"),base*fxRates.TWD,2);
+set($("jpy"),base*fxRates.JPY,2);
+}
+
 });
 }
 
 $("usd").oninput=()=>{lastEdit="usd";recalc();}
 $("twd").oninput=()=>{lastEdit="twd";recalc();}
 $("jpy").oninput=()=>{lastEdit="jpy";recalc();}
+$("eur").oninput=()=>{lastEdit="eur";recalc();}
 
 fetchFX();
 setInterval(fetchFX,FX_TTL);
